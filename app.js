@@ -1,12 +1,17 @@
 // ======================
-// 1. 基础配置（你原来的登录信息，完全保留）
+// 1. 多用户账号配置（在这里加人）
 // ======================
-const USER = "admin";
-const PWD = "123456";
+const users = [
+  { username: "admin", password: "123456" },
+  { username: "rachel", password: "english123" },
+  { username: "user1", password: "666666" },
+  { username: "student", password: "study789" }
+];
+
 const app = document.getElementById("app");
 
 // ======================
-// 2. 语料库数据（你原来的剧集数据，可无限扩展）
+// 2. 语料库数据（你原来的）
 // ======================
 const episodes = [
   {
@@ -14,7 +19,7 @@ const episodes = [
     title: "The Pilot · 第一季第一集",
     desc: "瑞秋逃婚登场，莫妮卡公寓初遇",
     duration: "22:00",
-    videoUrl: "https://example.com/S01E01.mp4", // 替换成你的视频链接
+    videoUrl: "https://example.com/S01E01.mp4",
     subtitles: [
       { en: "Well, well, well. Look who's back.", cn: "哎哟哎哟，看看谁回来了。" },
       { en: "We were on a break!", cn: "我们当时已经分手了！" }
@@ -44,12 +49,12 @@ const episodes = [
 ];
 
 // ======================
-// 3. 页面初始化（显示登录页）
+// 3. 页面初始化
 // ======================
 showLogin();
 
 // ======================
-// 4. 登录功能（你原来的逻辑，完全保留）
+// 4. 登录页面
 // ======================
 function showLogin() {
   app.innerHTML = `
@@ -62,11 +67,18 @@ function showLogin() {
   `;
 }
 
+// ======================
+// 5. 登录判断（已支持多账号）
+// ======================
 function login() {
   const u = document.getElementById("username").value.trim();
   const p = document.getElementById("password").value.trim();
 
-  if (u === USER && p === PWD) {
+  const foundUser = users.find(user => 
+    user.username === u && user.password === p
+  );
+
+  if (foundUser) {
     showHome();
   } else {
     alert("账号或密码错误，请重试！");
@@ -74,7 +86,7 @@ function login() {
 }
 
 // ======================
-// 5. 主页（剧集列表，你原来的逻辑，适配博主风格）
+// 6. 主页（剧集列表）
 // ======================
 function showHome() {
   const episodesHTML = episodes.map(ep => `
@@ -99,13 +111,12 @@ function showHome() {
 }
 
 // ======================
-// 6. 播放页（学习核心，保留你所有功能：视频+字幕+跟读+练习）
+// 7. 播放页
 // ======================
 function goToPlayer(episodeId) {
   const ep = episodes.find(e => e.id === episodeId);
   if (!ep) return;
 
-  // 生成字幕HTML
   const subtitlesHTML = ep.subtitles.map(sub => `
     <div class="subtitle-item">
       <div class="subtitle-en">${sub.en}</div>
@@ -120,16 +131,13 @@ function goToPlayer(episodeId) {
         <p style="color: var(--text-secondary);">${ep.desc}</p>
       </div>
 
-      <!-- 视频播放器（你原来的功能） -->
       <video id="video" controls src="${ep.videoUrl}"></video>
 
-      <!-- 字幕区（你原来的双语字幕） -->
       <div class="subtitle-section">
         <h3>📝 逐句字幕</h3>
         ${subtitlesHTML}
       </div>
 
-      <!-- 跟读区（你原来的影子跟读+录音） -->
       <div class="shadowing-section">
         <h3>🎙️ 影子跟读</h3>
         <div class="shadowing-buttons">
@@ -139,7 +147,6 @@ function goToPlayer(episodeId) {
         </div>
       </div>
 
-      <!-- 练习区（你原来的填空练习+判分） -->
       <div class="practice-section">
         <h3>✍️ 填空练习</h3>
         <div class="practice-item">
@@ -153,7 +160,7 @@ function goToPlayer(episodeId) {
 }
 
 // ======================
-// 7. 跟读功能（你原来的逻辑，完全保留）
+// 8. 跟读功能
 // ======================
 function playShadow() {
   const video = document.getElementById("video");
@@ -161,7 +168,6 @@ function playShadow() {
 }
 
 function recordAudio() {
-  // 可后续扩展完整录音功能，这里保留你原来的入口
   alert("录音功能已就绪，点击后可开始录制对比发音~");
 }
 
@@ -174,7 +180,7 @@ function resetVideo() {
 }
 
 // ======================
-// 8. 练习判分（你原来的逻辑，适配博主风格提示）
+// 9. 练习判分
 // ======================
 function checkAnswer(correctAnswer) {
   const input = document.getElementById("practice-input").value.trim().toLowerCase();
