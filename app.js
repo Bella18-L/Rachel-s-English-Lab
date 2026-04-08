@@ -1,6 +1,6 @@
 // ====================== 1. 多用户账号配置（完全保留你原有） ======================
 const users = [
-  { username: "admin", password: "123456" },
+  { username: "1", password: "1" },
   { username: "rachel", password: "english123" },
   { username: "user1", password: "666666" }
 ];
