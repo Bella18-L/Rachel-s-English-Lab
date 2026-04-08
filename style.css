@@ -1,4 +1,4 @@
-/* 全局重置 & 基础设定（博主风格核心） */
+/* 全局重置 & 博主风变量（支持黑夜模式） */
 * {
   margin: 0;
   padding: 0;
@@ -6,18 +6,31 @@
 }
 
 :root {
-  /* 博主风统一配色 */
-  --primary: #3498db;
-  --primary-hover: #2980b9;
-  --bg: #f7f8fc;
-  --card-bg: #ffffff;
-  --text-primary: #2c3e50;
-  --text-secondary: #7f8c8d;
-  --border: #eaecef;
-  --success: #27ae60;
-  --error: #e74c3c;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  --radius: 10px;
+  /* 浅色模式（博主默认风） */
+  --primary: #165DFF;
+  --primary-hover: #0E42D2;
+  --bg: #F5F7FA;
+  --card-bg: #FFFFFF;
+  --text-primary: #1D2129;
+  --text-secondary: #86909C;
+  --border: #E5E6EB;
+  --success: #00B42A;
+  --error: #F53F3F;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* 黑夜模式（完全保留你原来的功能） */
+[data-theme="dark"] {
+  --bg: #121212;
+  --card-bg: #1E1E1E;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B0;
+  --border: #333333;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 body {
@@ -25,9 +38,129 @@ body {
   background-color: var(--bg);
   color: var(--text-primary);
   line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-/* 登录页（博主极简风） */
+/* 顶部导航栏（博主核心元素，加模式切换按钮） */
+.navbar {
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color 0.3s;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.navbar-search {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 40px;
+  position: relative;
+}
+
+.navbar-search input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.navbar-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+}
+
+.navbar-search::before {
+  content: "🔍";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.theme-toggle {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--border);
+}
+
+.logout-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* 分类筛选栏（博主风） */
+.filter-bar {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-tag {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-tag.active, .filter-tag:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* 登录页（博主极简风，保留原有逻辑） */
 .login-container {
   max-width: 420px;
   margin: 120px auto;
@@ -36,6 +169,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   text-align: center;
+  transition: background-color 0.3s;
 }
 
 .login-container h1 {
@@ -52,6 +186,8 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 15px;
+  background: var(--bg);
+  color: var(--text-primary);
   transition: border-color 0.2s;
 }
 
@@ -78,15 +214,15 @@ body {
   background: var(--primary-hover);
 }
 
-/* 主页（语料库列表） */
+/* 主页（剧集列表，博主风卡片+收藏功能） */
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: 0 24px 40px;
 }
 
 .home-header {
-  margin-bottom: 36px;
+  margin-bottom: 24px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
 }
@@ -105,48 +241,101 @@ body {
 
 .episodes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
 
 .episode-card {
   background: var(--card-bg);
-  padding: 24px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
 }
 
 .episode-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-hover);
 }
 
-.episode-card h3 {
-  font-size: 18px;
+.episode-cover {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--border);
+}
+
+.episode-content {
+  padding: 16px;
+}
+
+.episode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.episode-id {
+  font-size: 16px;
   font-weight: 600;
+  color: var(--primary);
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.favorite-btn.active {
+  color: #F53F3F;
+}
+
+.episode-title {
+  font-size: 16px;
+  font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 8px;
 }
 
-.episode-card p {
-  color: var(--text-secondary);
+.episode-desc {
   font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
   line-height: 1.5;
 }
 
-.episode-duration {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 4px 10px;
+.episode-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.episode-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.tag {
+  padding: 2px 8px;
   background: var(--bg);
   border-radius: 4px;
   font-size: 12px;
   color: var(--text-secondary);
 }
 
-/* 播放页（学习区） */
+.episode-duration {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 播放页（保留你所有功能，升级博主风） */
 .player-container {
   max-width: 1000px;
   margin: 0 auto;
@@ -178,6 +367,7 @@ video {
   border-radius: var(--radius);
   margin-bottom: 24px;
   box-shadow: var(--shadow);
+  transition: background-color 0.3s;
 }
 
 .subtitle-section h3 {
@@ -215,6 +405,7 @@ video {
   border-radius: var(--radius);
   margin-bottom: 24px;
   box-shadow: var(--shadow);
+  transition: background-color 0.3s;
 }
 
 .shadowing-section h3 {
@@ -252,6 +443,7 @@ video {
   padding: 24px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  transition: background-color 0.3s;
 }
 
 .practice-section h3 {
@@ -273,6 +465,8 @@ video {
   margin: 0 8px;
   font-size: 15px;
   width: 120px;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
 .practice-item button {
@@ -302,18 +496,18 @@ video {
   color: var(--error);
 }
 
-/* 响应式适配（手机端） */
+/* 响应式适配 */
 @media (max-width: 768px) {
-  .login-container {
-    margin: 60px 20px;
-    padding: 32px 24px;
+  .navbar {
+    padding: 0 16px;
   }
-
-  .home-container {
-    padding: 24px 16px;
+  .navbar-search {
+    display: none;
   }
-
   .episodes-grid {
     grid-template-columns: 1fr;
+  }
+  .filter-bar {
+    padding: 0 16px;
   }
 }
