@@ -48,7 +48,6 @@ body {
   font-size: 18px;
 }
 
-/* 导航 */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -99,7 +98,6 @@ body {
   color: var(--text);
 }
 
-/* 布局 */
 .player-layout {
   max-width: 1300px;
   margin: 20px auto;
@@ -121,7 +119,6 @@ video {
   display: block;
 }
 
-/* 控制栏 */
 .controls {
   display: flex;
   gap: 10px;
@@ -145,7 +142,6 @@ video {
   background: var(--orange) !important;
 }
 
-/* 字幕区域 */
 .sub-section {
   flex: 1;
   background: var(--card);
@@ -180,13 +176,11 @@ video {
   font-size: 14px;
 }
 
-/* 重点词高亮 */
 .word { color: var(--blue); font-weight: bold; }
 .phrase { color: var(--green); font-weight: bold; }
 .slang { color: var(--orange); font-weight: bold; }
 .name { color: var(--purple); font-weight: bold; }
 
-/* 填空输入 */
 .blank-input {
   width: 120px;
   padding: 4px 6px;
@@ -196,7 +190,6 @@ video {
   font-size: 15px;
 }
 
-/* 词汇面板 */
 .vocab-panel {
   margin-top: 16px;
   background: var(--card);
@@ -217,7 +210,6 @@ video {
   font-size: 18px;
 }
 
-/* 闪卡 */
 .flashcard {
   background: var(--card);
   border-radius: var(--radius);
@@ -242,7 +234,6 @@ video {
   justify-content: center;
 }
 
-/* 主页 */
 .home {
   max-width: 1000px;
   margin: 40px auto;
@@ -274,7 +265,6 @@ video {
   padding: 16px;
 }
 
-/* 登录 */
 .login-box {
   max-width: 400px;
   margin: 100px auto;
@@ -303,7 +293,6 @@ video {
   cursor: pointer;
 }
 
-/* 移动端适配 */
 @media (max-width: 900px) {
   .player-layout {
     flex-direction: column;
