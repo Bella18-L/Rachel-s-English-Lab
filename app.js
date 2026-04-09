@@ -66,7 +66,7 @@ function showLogin() {
   app.innerHTML = `
     <div class="login-box">
       <h2>登录</h2>
-      <input id="u" placeholder="账号">
+      <input id="1" placeholder="1">
       <input id="p" type="password" placeholder="密码">
       <button onclick="login()">登录</button>
     </div>
