@@ -282,7 +282,7 @@ function renderPlayer() {
         <div class="mode-tab ${currentMode==='bilingual'?'active':''}" onclick="setMode('bilingual')">双语</div>
         <div class="mode-tab ${currentMode==='english'?'active':''}" onclick="setMode('english')">英文</div>
         <div class="mode-tab ${currentMode==='chinese'?'active':''}" onclick="setMode('chinese')">中文</div>
-        class="mode-tab ${currentMode==='dictation'?'active':''}" onclick="setMode('dictation')">听写</div>
+        <div class="mode-tab ${currentMode==='dictation'?'active':''}" onclick="setMode('dictation')">听写</div>
         <div class="mode-tab ${currentMode==='blank'?'active':''}" onclick="setMode('blank')">填空</div>
         <div class="mode-tab ${currentMode==='read'?'active':''}" onclick="setMode('read')">跟读</div>
         <div class="mode-tab ${currentMode==='flash'?'active':''}" onclick="setMode('flash')">闪卡</div>
