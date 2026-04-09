@@ -1,3 +1,21 @@
+/* 搜索栏 */
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  width: 220px;
+  outline: none;
+}
+.search-input:focus {
+  border-color: var(--blue);
+}
+
+.search-result-info {
+  font-size: 14px;
+  color: var(--text-light);
+}
 * {
   margin: 0;
   padding: 0;
