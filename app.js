@@ -23,6 +23,7 @@ let filters = {
 // 新增：搜索关键词
 let searchKeyword = "";
 
+// 学习状态（手动打卡）
 let learnStatus = JSON.parse(localStorage.getItem("learnStatus")) || {};
 let lastPlay = JSON.parse(localStorage.getItem("lastPlay")) || null;
 
@@ -74,7 +75,7 @@ function setSearchKeyword(val) {
   showHome();
 }
 
-// 主页（已带搜索栏 + 无语音）
+// 主页（简约高级版，手动打卡）
 function showHome() {
   const total = episodes.length;
   const learned = Object.keys(learnStatus).filter(id => learnStatus[id] === true).length;
@@ -84,13 +85,10 @@ function showHome() {
 
   let filteredEp = [...episodes];
 
-  // 搜索逻辑：匹配英文句子里的单词
   if (searchKeyword) {
-    filteredEp = filteredEp.filter(ep => {
-      return ep.subs.some(sub =>
-        sub.en.toLowerCase().includes(searchKeyword)
-      );
-    });
+    filteredEp = filteredEp.filter(ep =>
+      ep.subs.some(s => s.en.toLowerCase().includes(searchKeyword))
+    );
   }
 
   if (filters.sort === "desc") filteredEp = filteredEp.reverse();
@@ -107,43 +105,58 @@ function showHome() {
   const sidebarHtml = `
     <div class="home-sidebar">
       <div class="stat-item">
-        <div class="stat-label"><span>📚</span><span>总期数</span></div>
+        <div class="stat-label">
+          <span style="color:var(--blue)">📚</span>
+          <span>总期数</span>
+        </div>
         <span class="stat-count">${total}</span>
       </div>
       <div class="stat-item">
-        <div class="stat-label"><span>✅</span><span>已学习</span></div>
+        <div class="stat-label">
+          <span style="color:var(--green)">✅</span>
+          <span>已学习</span>
+        </div>
         <span class="stat-count" style="color:var(--green)">${learned}</span>
       </div>
       <div class="stat-item">
-        <div class="stat-label"><span>⏸️</span><span>未学习</span></div>
+        <div class="stat-label">
+          <span style="color:var(--text-light)">⏸️</span>
+          <span>未学习</span>
+        </div>
         <span class="stat-count">${unlearned}</span>
       </div>
       <div class="stat-item">
-        <div class="stat-label"><span>❤️</span><span>已收藏</span></div>
+        <div class="stat-label">
+          <span style="color:var(--pink)">❤️</span>
+          <span>已收藏</span>
+        </div>
         <span class="stat-count" style="color:var(--pink)">${favCount}</span>
       </div>
       <div class="stat-item" ${!lastPlay ? "style='opacity:0.5'" : ""} onclick="${lastPlay ? `goPlayer('${lastPlay.epId}')` : ""}">
-        <div class="stat-label"><span>▶️</span><span>继续学习</span></div>
+        <div class="stat-label">
+          <span style="color:var(--orange)">▶️</span>
+          <span>继续学习</span>
+        </div>
         <span class="stat-count" style="color:var(--orange)">${continueCount}</span>
       </div>
 
       <div class="filter-section">
-        <div class="filter-title">筛选</div>
+        <div class="filter-title">筛选条件</div>
         <div class="filter-row">
-          <div>排序</div>
+          <div style="margin-bottom:6px;">排序</div>
           <div class="filter-buttons">
             <button class="filter-btn ${filters.sort==='asc'?'active':''}" onclick="setFilter('sort','asc')">正序</button>
             <button class="filter-btn ${filters.sort==='desc'?'active':''}" onclick="setFilter('sort','desc')">倒序</button>
           </div>
         </div>
         <div class="filter-row">
-          <div>难度</div>
-          <div class="star-rating">
+          <div style="margin-bottom:6px;">难度</div>
+          <div class="star-rating" id="starRating">
             ${[1,2,3,4,5].map(i => `<span class="star ${filters.difficulty>=i?'active':''}" onclick="setFilter('difficulty',${i})">★</span>`).join("")}
           </div>
         </div>
         <div class="filter-row">
-          <div>性别</div>
+          <div style="margin-bottom:6px;">性别</div>
           <div class="filter-buttons">
             <button class="filter-btn ${filters.gender==='all'?'active':''}" onclick="setFilter('gender','all')">全部</button>
             <button class="filter-btn ${filters.gender==='male'?'active':''}" onclick="setFilter('gender','male')">男</button>
@@ -152,7 +165,7 @@ function showHome() {
           </div>
         </div>
         <div class="filter-row">
-          <div>主题</div>
+          <div style="margin-bottom:6px;">主题标签</div>
           <div class="filter-buttons">
             <button class="filter-btn ${filters.tags==='all'?'active':''}" onclick="setFilter('tags','all')">全部</button>
             <button class="filter-btn" onclick="setFilter('tags','生活')">生活</button>
@@ -161,7 +174,7 @@ function showHome() {
             <button class="filter-btn" onclick="setFilter('tags','商务')">商务</button>
           </div>
         </div>
-        <button class="clear-filter" onclick="clearFilters()">清空筛选</button>
+        <button class="clear-filter" onclick="clearFilters()">清除筛选</button>
       </div>
     </div>
   `;
@@ -171,24 +184,23 @@ function showHome() {
     const stars = Array(5).fill("☆").map((s,i) => `<span class="star ${i < ep.difficulty ? 'active' : ''}">★</span>`).join("");
     return `
       <div class="ep-card" onclick="goPlayer('${ep.id}')">
-        <img src="${ep.cover}" class="ep-cover">
+        <img src="${ep.cover}" alt="${ep.title}" class="ep-cover">
         <div class="ep-duration">${ep.duration}</div>
-        ${isLearned ? '<div class="ep-status">已学习</div>' : ''}
+        ${isLearned ? `<div class="ep-status">已打卡</div>` : ""}
         <div class="ep-info">
           <div class="ep-id">${ep.id}</div>
           <div class="ep-meta">
             <div class="star-rating">${stars}</div>
-            <div>${ep.gender === 'female' ? '女' : ep.gender === 'male' ? '男' : '混合'}</div>
+            <div>${ep.gender === "female" ? "女" : ep.gender === "male" ? "男" : "混合"}</div>
           </div>
           <div class="ep-tags">
-            ${ep.tags.map(t => `<span class="ep-tag">${t}</span>`).join('')}
+            ${ep.tags.map(tag => `<span class="ep-tag">${tag}</span>`).join("")}
           </div>
         </div>
       </div>
     `;
   }).join("");
 
-  // 顶部 + 搜索栏
   app.innerHTML = `
     <div class="navbar">
       <div>英语语料库</div>
@@ -227,12 +239,11 @@ function clearFilters() {
   showHome();
 }
 
-// 播放页（已修复所有语法错误）
+// 播放页（新增手动打卡按钮）
 function goPlayer(id) {
   currentEp = episodes.find(e => e.id === id);
   if (!currentEp) return;
-  learnStatus[id] = true;
-  localStorage.setItem("learnStatus", JSON.stringify(learnStatus));
+  // 保存上次播放
   lastPlay = { epId: id, time: 0 };
   localStorage.setItem("lastPlay", JSON.stringify(lastPlay));
   renderPlayer();
@@ -240,6 +251,8 @@ function goPlayer(id) {
 
 function renderPlayer() {
   const ep = currentEp;
+  const isLearned = learnStatus[ep.id] === true;
+
   let subHtml = "";
 
   ep.subs.forEach((s, idx) => {
@@ -298,6 +311,10 @@ function renderPlayer() {
       <div class="video-section">
         <div class="video-box">
           <video id="v" src="${ep.video}" controls></video>
+          <!-- 手动打卡按钮，左下角 -->
+          <div class="checkin-btn" onclick="toggleCheckin('${ep.id}')">
+            ${isLearned ? "✅ 已打卡" : "☑️ 打卡"}
+          </div>
         </div>
         <div class="controls">
           <button onclick="play()">播放</button>
@@ -324,7 +341,7 @@ function renderPlayer() {
       <div class="sub-section">
         ${subHtml}
         <div class="vocab-panel">
-          <h4>本集词汇</h4>
+          <h4>本集重点词汇</h4>
           ${vocabHtml}
         </div>
       </div>
@@ -332,41 +349,104 @@ function renderPlayer() {
   `;
 }
 
-function setMode(m) { currentMode = m; loopMode = abMode = false; renderPlayer(); }
+// 手动打卡逻辑
+window.toggleCheckin = function(id) {
+  learnStatus[id] = !learnStatus[id];
+  localStorage.setItem("learnStatus", JSON.stringify(learnStatus));
+  renderPlayer();
+  showHome();
+}
+
+function setMode(m) {
+  currentMode = m;
+  loopMode = abMode = false;
+  renderPlayer();
+}
+
 function jumpTo(time, end, idx) {
   const v = document.getElementById("v");
-  v.currentTime = time; abStart = time; abEnd = end; currentSubIndex = idx; v.play();
+  v.currentTime = time;
+  abStart = time;
+  abEnd = end;
+  currentSubIndex = idx;
+  v.play();
   lastPlay = { epId: currentEp.id, time };
   localStorage.setItem("lastPlay", JSON.stringify(lastPlay));
 }
-function prevSub() { if (!currentEp) return; currentSubIndex = Math.max(0, currentSubIndex-1); const s=currentEp.subs[currentSubIndex]; jumpTo(s.time,s.endTime,currentSubIndex); }
-function nextSub() { if (!currentEp) return; currentSubIndex = Math.min(currentEp.subs.length-1, currentSubIndex+1); const s=currentEp.subs[currentSubIndex]; jumpTo(s.time,s.endTime,currentSubIndex); }
-function toggleLoop() { loopMode = !loopMode; document.getElementById("loopBtn").classList.toggle("loop-active", loopMode); }
-function setAB() { const v=document.getElementById("v"); if (!abMode) { abStart=v.currentTime; abMode=true; alert("AB起点已设置"); } else { abEnd=v.currentTime; alert("AB循环已开启"); } }
-function syncLoop() {
-  setInterval(()=>{
-    const v=document.getElementById("v"); if (!v||!currentEp) return; const t=v.currentTime;
-    currentEp.subs.forEach((s,i)=>{
-      const el=document.getElementById("sub"+i); if (!el) return;
-      const on = t>=s.time && t<=s.endTime;
-      el.classList.toggle("active",on);
-      if (on) el.scrollIntoView({behavior:"smooth",block:"center"});
-    });
-    if (loopMode) { const cur=currentEp.subs.find(s=>t>=s.time&&t<=s.endTime); if (cur&&t>cur.endTime) v.currentTime=cur.time; }
-    if (abMode&&abEnd>abStart&&t>abEnd) v.currentTime=abStart;
-  },100);
+
+function prevSub() {
+  if (!currentEp) return;
+  currentSubIndex = Math.max(0, currentSubIndex - 1);
+  const s = currentEp.subs[currentSubIndex];
+  jumpTo(s.time, s.endTime, currentSubIndex);
 }
-function toggleFav(word,mean,type) {
-  const item={word,mean,type,ep:currentEp.id};
-  const i=favs.findIndex(x=>x.word===word&&x.ep===currentEp.id);
-  i>=0?favs.splice(i,1):favs.push(item);
-  localStorage.setItem("favs",JSON.stringify(favs));
+
+function nextSub() {
+  if (!currentEp) return;
+  currentSubIndex = Math.min(currentEp.subs.length - 1, currentSubIndex + 1);
+  const s = currentEp.subs[currentSubIndex];
+  jumpTo(s.time, s.endTime, currentSubIndex);
+}
+
+function toggleLoop() {
+  loopMode = !loopMode;
+  document.getElementById("loopBtn").classList.toggle("loop-active", loopMode);
+}
+
+function setAB() {
+  const v = document.getElementById("v");
+  if (!abMode) {
+    abStart = v.currentTime;
+    abMode = true;
+    alert("AB起点已设置");
+  } else {
+    abEnd = v.currentTime;
+    alert("AB循环已开启");
+  }
+}
+
+function syncLoop() {
+  setInterval(() => {
+    const v = document.getElementById("v");
+    if (!v || !currentEp) return;
+    const t = v.currentTime;
+
+    currentEp.subs.forEach((s, i) => {
+      const el = document.getElementById("sub" + i);
+      if (!el) return;
+      const on = t >= s.time && t <= s.endTime;
+      el.classList.toggle("active", on);
+      if (on) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    if (loopMode) {
+      const cur = currentEp.subs.find(s => t >= s.time && t <= s.endTime);
+      if (cur && t > cur.endTime) v.currentTime = cur.time;
+    }
+
+    if (abMode && abEnd > abStart && t > abEnd) v.currentTime = abStart;
+  }, 100);
+}
+
+function toggleFav(word, mean, type) {
+  const item = { word, mean, type, ep: currentEp.id };
+  const i = favs.findIndex(x => x.word === word && x.ep === currentEp.id);
+  i >= 0 ? favs.splice(i, 1) : favs.push(item);
+  localStorage.setItem("favs", JSON.stringify(favs));
   renderPlayer();
 }
-function clearFavs() { if(confirm("确定清空收藏？")){ favs=[]; localStorage.setItem("favs","[]"); renderPlayer(); } }
+
+function clearFavs() {
+  if (confirm("确定清空收藏？")) {
+    favs = [];
+    localStorage.setItem("favs", "[]");
+    renderPlayer();
+  }
+}
+
 function renderFlash() {
-  if(favs.length===0) return '<div class="flashcard">暂无收藏生词</div>';
-  const f=favs[flashIndex%favs.length];
+  if (favs.length === 0) return '<div class="flashcard">暂无收藏生词</div>';
+  const f = favs[flashIndex % favs.length];
   return `
     <div class="flashcard">
       <div class="flash-word">${f.word}</div>
@@ -378,10 +458,25 @@ function renderFlash() {
     </div>
   `;
 }
-function volUp() { const v=document.getElementById("v"); v.volume=Math.min(1,v.volume+0.1); }
-function volDown() { const v=document.getElementById("v"); v.volume=Math.max(0,v.volume-0.1); }
+
+function volUp() {
+  const v = document.getElementById("v");
+  v.volume = Math.min(1, v.volume + 0.1);
+}
+
+function volDown() {
+  const v = document.getElementById("v");
+  v.volume = Math.max(0, v.volume - 0.1);
+}
+
 function play() { document.getElementById("v").play(); }
 function pause() { document.getElementById("v").pause(); }
-function setSpeed(v) { document.getElementById("v").playbackRate=v; }
-function restart() { const v=document.getElementById("v"); v.currentTime=0; v.play(); }
-function toggleTheme() { theme=theme==="light"?"dark":"light"; document.documentElement.setAttribute("data-theme",theme); localStorage.setItem("theme",theme); renderPlayer(); }
+function setSpeed(v) { document.getElementById("v").playbackRate = v; }
+function restart() { const v = document.getElementById("v"); v.currentTime = 0; v.play(); }
+
+function toggleTheme() {
+  theme = theme === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  showHome();
+}
