@@ -1,87 +1,60 @@
-const app = document.getElementById('app');
-let theme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-theme', theme);
+const app = document.getElementById("app");
+let theme = localStorage.getItem("theme") || "light";
+document.documentElement.setAttribute("data-theme", theme);
 
-let currentMode = 'bilingual';
+let currentMode = "bilingual";
 let currentEp = null;
 let loopMode = false;
 let abMode = false;
 let abStart = 0, abEnd = 0;
-let favs = JSON.parse(localStorage.getItem('favs')) || [];
+let favs = JSON.parse(localStorage.getItem("favs")) || [];
 let flashIndex = 0;
 let studyTime = 0;
 let fontSize = 16;
 let currentSubIndex = 0;
 
+let users = [];
+let episodes = [];
+
 setInterval(() => studyTime++, 1000);
+loadConfig();
 
-const users = [
-  { username: 'admin', password: '123456' },
-  { username: 'user1', password: '111111' }
-];
-
-const episodes = [
-  {
-    id: 'S01E01',
-    title: 'S01E01 Pilot',
-    video: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
-    subs: [
-      {
-        en: '<span class="slang">Well</span>, <span class="word">look</span> who\'s here!',
-        phonetic: 'wel, lʊk huːz hɪr',
-        blankEn: '<span class="slang">Well</span>, <input class="blank-input"> who\'s here!',
-        dictEn: '_________________________',
-        cn: '哇，看看谁来了！',
-        time: 1.0,
-        endTime: 2.8,
-        vocab: [
-          { word: 'well', type: '俚语', mean: '哎呀' },
-          { word: 'look', type: '单词', mean: '看' }
-        ]
-      },
-      {
-        en: 'We were <span class="phrase">on a break</span>!',
-        phonetic: 'wi wɜːr ɑːn ə breɪk',
-        blankEn: 'We were <input class="blank-input">!',
-        dictEn: '_________________________',
-        cn: '我们当时分手了！',
-        time: 3.0,
-        endTime: 4.5,
-        vocab: [
-          { word: 'on a break', type: '短语', mean: '分手/暂停关系' }
-        ]
-      }
-    ]
-  }
-];
-
-showLogin();
-
-function hideLoading() {
-  document.getElementById('loading').style.display = 'none';
+async function loadConfig() {
+  const uRes = await fetch("/config/users.json");
+  users = await uRes.json();
+  const vRes = await fetch("/config/videos.json");
+  episodes = await vRes.json();
+  startApp();
 }
 
-// 登录
+function startApp() {
+  showLogin();
+  syncLoop();
+  hideLoading();
+}
+
+function hideLoading() {
+  document.getElementById("loading").style.display = "none";
+}
+
 function showLogin() {
   app.innerHTML = `
     <div class="login-box">
       <h2>登录</h2>
-      <input id="1" placeholder="1">
+      <input id="u" placeholder="账号">
       <input id="p" type="password" placeholder="密码">
       <button onclick="login()">登录</button>
     </div>
   `;
-  hideLoading();
 }
 
 function login() {
-  const u = document.getElementById('u').value;
-  const p = document.getElementById('p').value;
+  const u = document.getElementById("u").value;
+  const p = document.getElementById("p").value;
   const ok = users.some(x => x.username === u && x.password === p);
-  ok ? showHome() : alert('账号或密码错误');
+  ok ? showHome() : alert("账号或密码错误");
 }
 
-// 主页
 function showHome() {
   const cards = episodes.map(ep => `
     <div class="ep-card" onclick="goPlayer('${ep.id}')">
@@ -91,7 +64,7 @@ function showHome() {
         <div style="color:#888;font-size:14px">${ep.title}</div>
       </div>
     </div>
-  `).join('');
+  `).join("");
 
   app.innerHTML = `
     <div class="navbar">
@@ -103,26 +76,23 @@ function showHome() {
       <div class="ep-grid">${cards}</div>
     </div>
   `;
-  hideLoading();
 }
 
-// 播放页
 function goPlayer(id) {
   currentEp = episodes.find(e => e.id === id);
   if (!currentEp) return;
   renderPlayer();
-  syncLoop();
 }
 
 function renderPlayer() {
   const ep = currentEp;
-  let subHtml = '';
+  let subHtml = "";
 
   ep.subs.forEach((s, idx) => {
     let en = s.en;
-    if (currentMode === 'dictation') en = s.dictEn;
-    if (currentMode === 'blank') en = s.blankEn;
-    const phonetic = currentMode === 'read' ? `<div class="sub-phonetic">${s.phonetic}</div>` : '';
+    if (currentMode === "dictation") en = s.dictEn;
+    if (currentMode === "blank") en = s.blankEn;
+    const phonetic = currentMode === "read" ? `<div class="sub-phonetic">${s.phonetic}</div>` : "";
 
     subHtml += `
       <div class="sub-item" id="sub${idx}" onclick="jumpTo(${s.time}, ${s.endTime}, ${idx})">
@@ -133,7 +103,7 @@ function renderPlayer() {
     `;
   });
 
-  let vocabHtml = '';
+  let vocabHtml = "";
   ep.subs.forEach(s => {
     s.vocab.forEach(v => {
       const isFav = favs.some(x => x.word === v.word && x.ep === currentEp.id);
@@ -141,7 +111,7 @@ function renderPlayer() {
         <div class="vocab-item">
           <div><b>${v.word}</b> · ${v.type} · ${v.mean}</div>
           <span class="vocab-fav" onclick="toggleFav('${v.word}','${v.mean}','${v.type}')">
-            ${isFav ? '⭐' : '☆'}
+            ${isFav ? "⭐" : "☆"}
           </span>
         </div>
       `;
@@ -206,19 +176,16 @@ function renderPlayer() {
       </div>
     </div>
   `;
-  hideLoading();
 }
 
-// 模式
 function setMode(m) {
   currentMode = m;
   loopMode = abMode = false;
   renderPlayer();
 }
 
-// 跳转
 function jumpTo(time, end, idx) {
-  const v = document.getElementById('v');
+  const v = document.getElementById("v");
   v.currentTime = time;
   abStart = time;
   abEnd = end;
@@ -226,7 +193,6 @@ function jumpTo(time, end, idx) {
   v.play();
 }
 
-// 上下句
 function prevSub() {
   if (!currentEp) return;
   currentSubIndex = Math.max(0, currentSubIndex - 1);
@@ -241,38 +207,35 @@ function nextSub() {
   jumpTo(s.time, s.endTime, currentSubIndex);
 }
 
-// 循环
 function toggleLoop() {
   loopMode = !loopMode;
-  document.getElementById('loopBtn').classList.toggle('loop-active', loopMode);
+  document.getElementById("loopBtn").classList.toggle("loop-active", loopMode);
 }
 
-// AB点
 function setAB() {
-  const v = document.getElementById('v');
+  const v = document.getElementById("v");
   if (!abMode) {
     abStart = v.currentTime;
     abMode = true;
-    alert('AB起点已设置');
+    alert("AB起点已设置");
   } else {
     abEnd = v.currentTime;
-    alert('AB循环已开启');
+    alert("AB循环已开启");
   }
 }
 
-// 同步
 function syncLoop() {
   setInterval(() => {
-    const v = document.getElementById('v');
+    const v = document.getElementById("v");
     if (!v || !currentEp) return;
     const t = v.currentTime;
 
     currentEp.subs.forEach((s, i) => {
-      const el = document.getElementById('sub' + i);
+      const el = document.getElementById("sub" + i);
       if (!el) return;
       const on = t >= s.time && t <= s.endTime;
-      el.classList.toggle('active', on);
-      if (on) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.toggle("active", on);
+      if (on) el.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
     if (loopMode) {
@@ -286,24 +249,22 @@ function syncLoop() {
   }, 100);
 }
 
-// 收藏
 function toggleFav(word, mean, type) {
   const item = { word, mean, type, ep: currentEp.id };
   const i = favs.findIndex(x => x.word === word && x.ep === currentEp.id);
   i >= 0 ? favs.splice(i, 1) : favs.push(item);
-  localStorage.setItem('favs', JSON.stringify(favs));
+  localStorage.setItem("favs", JSON.stringify(favs));
   renderPlayer();
 }
 
 function clearFavs() {
-  if (confirm('确定清空所有收藏？')) {
+  if (confirm("确定清空所有收藏？")) {
     favs = [];
-    localStorage.setItem('favs', '[]');
+    localStorage.setItem("favs", "[]");
     renderPlayer();
   }
 }
 
-// 闪卡
 function renderFlash() {
   if (favs.length === 0) return '<div class="flashcard">暂无收藏生词</div>';
   const f = favs[flashIndex % favs.length];
@@ -319,27 +280,24 @@ function renderFlash() {
   `;
 }
 
-// 音量
 function volUp() {
-  const v = document.getElementById('v');
+  const v = document.getElementById("v");
   v.volume = Math.min(1, v.volume + 0.1);
 }
 
 function volDown() {
-  const v = document.getElementById('v');
+  const v = document.getElementById("v");
   v.volume = Math.max(0, v.volume - 0.1);
 }
 
-// 播放
-function play() { document.getElementById('v').play(); }
-function pause() { document.getElementById('v').pause(); }
-function setSpeed(v) { document.getElementById('v').playbackRate = v; }
-function restart() { const v = document.getElementById('v'); v.currentTime = 0; v.play(); }
+function play() { document.getElementById("v").play(); }
+function pause() { document.getElementById("v").pause(); }
+function setSpeed(v) { document.getElementById("v").playbackRate = v; }
+function restart() { const v = document.getElementById("v"); v.currentTime = 0; v.play(); }
 
-// 主题
 function toggleTheme() {
-  theme = theme === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
+  theme = theme === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
   renderPlayer();
 }
