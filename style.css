@@ -3,37 +3,30 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 :root {
   --bg: #f7f8fa;
-  --card: #ffffff;
-  --text: #222222;
-  --text-light: #666666;
+  --card: #fff;
+  --text: #222;
+  --text-light: #666;
   --border: #e5e7eb;
   --blue: #165DFF;
   --green: #00B42A;
   --orange: #FF7D00;
-  --pink: #f36b9f;
   --radius: 12px;
   --shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
-
 [data-theme="dark"] {
   --bg: #121212;
   --card: #1e1e1e;
-  --text: #ffffff;
-  --text-light: #cccccc;
-  --border: #333333;
+  --text: #fff;
+  --text-light: #ccc;
+  --border: #333;
 }
-
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  transition: all 0.3s;
-  line-height: 1.6;
+  font-family: system-ui, sans-serif;
 }
-
 #loading {
   position: fixed;
   inset: 0;
@@ -41,11 +34,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  font-size: 18px;
+  z-index: 999;
 }
-
-/* 登录 */
 .login-box {
   max-width: 400px;
   margin: 100px auto;
@@ -67,14 +57,12 @@ body {
   width: 100%;
   padding: 12px;
   background: var(--blue);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   margin-top: 10px;
   cursor: pointer;
 }
-
-/* 导航栏 */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -85,20 +73,6 @@ body {
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 99;
-}
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.back-btn {
-  background: var(--blue);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
 }
 .search-input {
   padding: 8px 12px;
@@ -106,22 +80,16 @@ body {
   border-radius: 6px;
   background: var(--bg);
   color: var(--text);
-  width: 240px;
-  outline: none;
-}
-.search-input:focus {
-  border-color: var(--blue);
+  width: 220px;
 }
 .theme-btn {
-  background: transparent;
-  border: 1px solid var(--border);
   padding: 6px 12px;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  cursor: pointer;
+  background: none;
   color: var(--text);
+  cursor: pointer;
 }
-
-/* 主页布局 */
 .home-container {
   max-width: 1300px;
   margin: 20px auto;
@@ -134,10 +102,8 @@ body {
   background: var(--card);
   border-radius: var(--radius);
   padding: 20px;
-  box-shadow: var(--shadow);
   position: sticky;
   top: 80px;
-  height: fit-content;
 }
 .stat-item {
   display: flex;
@@ -165,7 +131,7 @@ body {
 }
 .filter-btn.active {
   background: var(--blue);
-  color: white;
+  color: #fff;
 }
 .star {
   color: #ddd;
@@ -179,14 +145,12 @@ body {
   width: 100%;
   padding: 8px;
   background: #666;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   margin-top: 8px;
 }
-
-/* 剧集卡片 */
 .ep-grid {
   flex: 1;
   display: grid;
@@ -199,66 +163,25 @@ body {
   overflow: hidden;
   box-shadow: var(--shadow);
   cursor: pointer;
-  transition: transform 0.2s;
-  position: relative;
-}
-.ep-card:hover {
-  transform: translateY(-4px);
 }
 .ep-cover {
   width: 100%;
   height: 160px;
   object-fit: cover;
-  background: #ddd;
-}
-.ep-duration {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.7);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-.ep-status {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: var(--green);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
 }
 .ep-info {
   padding: 12px;
 }
 .ep-id {
   font-weight: 600;
-  margin-bottom: 4px;
-}
-.ep-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: var(--text-light);
-}
-.ep-tags {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  margin-top: 6px;
 }
 .ep-tag {
   background: var(--bg);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 11px;
-  color: var(--text-light);
+  font-size: 12px;
+  margin-right: 4px;
 }
-
-/* 播放页 */
 .player-layout {
   max-width: 1300px;
   margin: 20px auto;
@@ -276,7 +199,6 @@ body {
 }
 video {
   width: 100%;
-  display: block;
 }
 .controls {
   display: flex;
@@ -286,7 +208,7 @@ video {
 }
 .controls button {
   background: var(--blue);
-  color: white;
+  color: #fff;
   border: none;
   padding: 8px 12px;
   border-radius: 6px;
@@ -301,51 +223,16 @@ video {
   overflow-y: auto;
 }
 .sub-item {
-  padding: 14px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
 }
 .sub-item.active {
-  background: rgba(22, 93, 255, 0.15);
-  padding-left: 10px;
+  background: rgba(22, 93, 255, 0.1);
+  padding-left: 8px;
   border-radius: 6px;
 }
-.sub-en {
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-.sub-cn {
-  color: var(--text-light);
-  font-size: 14px;
-}
-.vocab-panel {
-  margin-top: 16px;
-}
-.vocab-item {
-  padding: 8px 0;
-  font-size: 14px;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* 模式切换 */
-.mode-tabs {
-  display: flex;
-  gap: 8px;
-}
-.mode-tab {
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-.mode-tab.active {
-  background: var(--blue);
-  color: white;
-}
-
-/* 移动端 */
-@media (max-width: 900px) {
+@media (max-width:900px) {
   .home-container, .player-layout {
     flex-direction: column;
   }
